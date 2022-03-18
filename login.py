@@ -1,5 +1,6 @@
 import sys, datetime
 from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
 
 class Login(QDialog):
     def __init__(self):
