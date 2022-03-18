@@ -8,5 +8,13 @@ def Database(sql,mode):
     con = DB.connect('test', 'test', a)
     csr = con.cursor()
     csr.execute(sql)
-
+    if mode==0:
+        csr.close()
+        con.commit()
+        con.close()
+    else:
+        b = csr.fetchall()
+        csr.close()
+        con.close()
+        return b
 
