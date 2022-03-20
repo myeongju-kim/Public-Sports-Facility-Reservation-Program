@@ -84,4 +84,9 @@ class Join(QDialog):
                 self.label2.setText("8~16자의 영어 소문자, 숫자, !만 가능합니다.")
                 self.join = 1
     def complete(self):
-        return 0
+        if self.join==0 and self.checkbox.isChecked()==True:
+            sql = 'insert into login values(' + "'" + self.id.text() + "'," + "'" + self.pwd.text() + "'," + "'" + self.name.text() + "'," + "'" + self.phone.text() + "')"
+            Database(sql,0)
+            self.setVisible(False)
+        else:
+            Messagebox(self,"가입 조건을 만족시키지 못했습니다.")
