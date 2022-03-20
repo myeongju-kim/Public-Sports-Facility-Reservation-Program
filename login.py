@@ -5,9 +5,65 @@ from PyQt5.QtGui import *
 class ID_find(QDialog):
     def __init__(self):
         super().__init__()
+        self.name=QLineEdit("",self)
+        self.phone=QLineEdit("",self)
+        self.initUI()
+    def initUI(self):
+        self.name.setGeometry(85,95,160,25)
+        self.phone.setGeometry(85,150,160,25)
+        btn=QPushButton("아이디 찾기",self)
+        btn.setGeometry(100,230,100,50)
+        btn.clicked.connect(self.find)
+        backgroundlmage = QImage('아이디찾기.png')
+        palette = QPalette()
+        palette.setBrush(10, QBrush(backgroundlmage))
+        self.setWindowIcon(QIcon('아이콘.png'))
+        self.setWindowTitle('아이디 찾기')
+        self.setPalette(palette)
+        self.resize(300, 320)
+        self.show()
+    def find(self):
+        Phone=self.phone.text()
+        for i in Phone:
+            try:
+                int(i)
+            except:
+                Phone="0"
+        sql = 'select id from LOGIN where name=' + "'" + self.name.text() + "' and phone="+"'"+Phone+"'"
+        a=Database(sql,1)
+        if a==[]:
+            Messagebox(self,"정보가 없습니다.")
+        else:
+            Messagebox(self,"아이디는 "+a[0][0]+"\n문의사항 : 055-753-0000")
 class Pwd_Find(QDialog):
     def __init__(self):
         super().__init__()
+        self.txt=QLineEdit("",self)
+        self.name=QLineEdit("",self)
+        self.initUI()
+    def initUI(self):
+        self.txt.setGeometry(75,95,160,25)
+        self.name.setGeometry(75,150,160,25)
+        btn=QPushButton("비밀번호 찾기",self)
+        btn.setGeometry(100,230,100,50)
+        btn.clicked.connect(self.find)
+        backgroundlmage = QImage('비번찾기.png')
+        palette = QPalette()
+        palette.setBrush(10, QBrush(backgroundlmage))
+        self.setWindowIcon(QIcon('아이콘.png'))
+        self.setWindowTitle('비밀번호 찾기')
+        self.setPalette(palette)
+        self.resize(300, 320)
+        self.show()
+    def find(self):
+        sql = 'select password from LOGIN where id=' + "'" + self.txt.text() + "' and name="+"'"+self.name.text()+"'"
+        a=Database(sql,1)
+        if a==[]:
+            Messagebox(self,"정보가 없습니다.")
+        else:
+            STR=a[0][0]
+            STR=STR.replace(STR[3],'*')
+            Messagebox(self,"비밀번호는 "+STR+"\n문의사항 : 055-753-0000")
 class Login(QDialog):
     def __init__(self):
         super().__init__()
