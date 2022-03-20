@@ -47,7 +47,41 @@ class Join(QDialog):
         self.resize(300, 500)
         self.show()
 
-    def Check(self, sign):
-        return 0
+    def Check(self,sign):
+        if sign==0:
+            ID=self.id.text()
+            LEN=len(ID)
+            if LEN>=5 and LEN<=10:
+                for i in range(len(ID)):
+                    if not((ID[i]>='a' and ID[i]<='z') or (ID[i]>='0' and ID[i]<='9')):
+                        self.label.setText("5~10자의 영어 소문자, 숫자만 가능합니다.")
+                        self.join=1
+                        return
+                sql = 'select ID from login'
+                b = Database(sql,1)
+                for i in range(len(b)):
+                    if b[i][0].strip()==self.id.text():
+                        self.label.setText("아이디가 중복입니다.")
+                        self.join = 1
+                        return
+                self.label.setText("사용 가능합니다.")
+                self.join = 0
+            else:
+                self.label.setText("5~10자의 영어 소문자, 숫자만 가능합니다.")
+                self.join = 1
+        else:
+            PWD = self.pwd.text()
+            LEN = len(PWD)
+            if LEN >= 8 and LEN <= 16:
+                for i in range(LEN):
+                    if not ((PWD[i] >= 'a' and PWD[i] <= 'z') or (PWD[i] >= '0' and PWD[i] <= '9') or PWD[i]=='!'):
+                        self.label2.setText("8~16자의 영어 소문자, 숫자, !만 가능합니다.")
+                        self.join = 1
+                        return
+                self.label2.setText("사용 가능합니다.")
+                self.join=0
+            else:
+                self.label2.setText("8~16자의 영어 소문자, 숫자, !만 가능합니다.")
+                self.join = 1
     def complete(self):
         return 0
