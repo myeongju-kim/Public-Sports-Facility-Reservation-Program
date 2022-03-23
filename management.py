@@ -1,5 +1,5 @@
-import database as d
-import login as lg
+import database as db
+import main
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
@@ -28,10 +28,10 @@ class Management_list(QDialog):
         self.table.setColumnWidth(2, 60)
         self.table.setColumnWidth(3, 150)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.setWindowIcon(QIcon('아이콘.png'))
+        self.setWindowIcon(QIcon('image/아이콘.png'))
         self.setWindowTitle('예약자 명단')
         self.table.setFont(QFont('HY견고딕',10))
-        backgroundlmage = QImage('관리자모드.png')
+        backgroundlmage = QImage('image/관리자모드.png')
         palette = QPalette()
         palette.setBrush(10, QBrush(backgroundlmage))
         self.setPalette(palette)
@@ -39,7 +39,7 @@ class Management_list(QDialog):
         self.show()
         sentance="where l.id=r.id and i.num=r.rnum and TO_CHAR(rdate,'yyyy-mm-dd')="+"'"+self.date+"' order by rtime,rnum"
         sql="select rtime,i.name,game,l.phone,l.name from login l,reserve r, information i "+sentance
-        b=d.Database(sql,1)
+        b=db.Database(sql,1)
         self.table.setRowCount(len(b))
         for i in range(len(b)):
             time = b[i][0].strip()
@@ -75,17 +75,17 @@ class Management(QDialog):
         self.Date.setGeometry(60, 120, 380, 300)
         self.Date.setGridVisible(True)
         self.Date.activated.connect(self.Rlist)
-        backgroundlmage = QImage('관리자모드.png')
+        backgroundlmage = QImage('image/관리자모드.png')
         palette = QPalette()
         palette.setBrush(10, QBrush(backgroundlmage))
-        self.setWindowIcon(QIcon('아이콘.png'))
+        self.setWindowIcon(QIcon('image/아이콘.png'))
         self.setWindowTitle('날짜 선택')
         self.setPalette(palette)
         self.resize(500, 500)
         self.show()
     def back(self):
         self.setVisible(False)
-        self.dialog=lg.Login()
+        self.dialog=main.Login()
     def Rlist(self):
         self.setVisible(False)
         temp = self.Date.selectedDate().toString('yyyy-MM-dd')

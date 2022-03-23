@@ -1,3 +1,5 @@
+import database as db
+import messagebox as mbox
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 class Join(QDialog):
@@ -38,10 +40,10 @@ class Join(QDialog):
         btn = QPushButton("가입", self)
         btn.setGeometry(100, 400, 100, 50)
         btn.clicked.connect(self.complete)
-        backgroundlmage = QImage('회원가입.png')
+        backgroundlmage = QImage('image/회원가입.png')
         palette = QPalette()
         palette.setBrush(10, QBrush(backgroundlmage))
-        self.setWindowIcon(QIcon('아이콘.png'))
+        self.setWindowIcon(QIcon('image/아이콘.png'))
         self.setWindowTitle('회원가입')
         self.setPalette(palette)
         self.resize(300, 500)
@@ -58,7 +60,7 @@ class Join(QDialog):
                         self.join=1
                         return
                 sql = 'select ID from login'
-                b = Database(sql,1)
+                b = db.Database(sql,1)
                 for i in range(len(b)):
                     if b[i][0].strip()==self.id.text():
                         self.label.setText("아이디가 중복입니다.")
@@ -86,7 +88,7 @@ class Join(QDialog):
     def complete(self):
         if self.join==0 and self.checkbox.isChecked()==True:
             sql = 'insert into login values(' + "'" + self.id.text() + "'," + "'" + self.pwd.text() + "'," + "'" + self.name.text() + "'," + "'" + self.phone.text() + "')"
-            Database(sql,0)
+            db.Database(sql,0)
             self.setVisible(False)
         else:
-            Messagebox(self,"가입 조건을 만족시키지 못했습니다.")
+            mbox.Messagebox(self,"가입 조건을 만족시키지 못했습니다.")
