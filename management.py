@@ -1,5 +1,5 @@
-import sys, datetime
 import database as d
+import login as lg
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
@@ -85,7 +85,7 @@ class Management(QDialog):
         self.show()
     def back(self):
         self.setVisible(False)
-        self.dialog=Login()
+        self.dialog=lg.Login()
     def Rlist(self):
         self.setVisible(False)
         temp = self.Date.selectedDate().toString('yyyy-MM-dd')
