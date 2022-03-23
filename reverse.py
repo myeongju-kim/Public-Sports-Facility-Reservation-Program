@@ -1,8 +1,114 @@
-import sys, datetime
-import database
+import datetime
+import database as db
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
+class Inquiry(QDialog):
+    def __init__(self,id):
+        super().__init__()
+        self.id = id
+        self.table = QTableWidget()
+        self.row=None
+        self.dialog=None
+        self.initUI()
+    def initUI(self):
+        date=str(datetime.datetime.now().date())
+        sql = 'select r.RDATE, r.RTIME, r.GAME, i.NAME, i.ADDRESS, i.PHONE from reserve r, information i where RDATE>='+"'"+date+"' and id="+"'"+self.id+"' and r.RNUM=i.NUM order by r.RDATE,r.RTIME"
+        b=db.Database(sql,1)
+        delbtn=QPushButton("",self)
+        delbtn.setStyleSheet('background-image: url(삭제.png);')
+        delbtn.setFixedSize(97,45)
+        delbtn.clicked.connect(self.Delete)
+        backbtn=QPushButton("",self)
+        backbtn.setStyleSheet('background-image: url(이전.png);')
+        backbtn.setFixedSize(113,45)
+        backbtn.clicked.connect(self.Back)
+        self.table.setColumnCount(6)
+        self.table.setRowCount(100)
+        self.table.setHorizontalHeaderLabels(('날짜','시간','종목','경기장','경기장 주소','경기장 연락처'))
+        self.table.setColumnWidth(2, 40)
+        self.table.setColumnWidth(4, 200)
+        self.table.setColumnWidth(5, 100)
+        self.table.cellClicked.connect(self.ROW)
+        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table.setFont(QFont('고딕', 10))
+        for i in range(len(b)):
+            for j in range(6):
+                if j==0:
+                    STR=str(b[i][j]).split(" ")[0]
+                elif j==5:
+                    STR=str(b[i][j])
+                    list_a=list(STR)
+                    list_a.insert(0,'0')
+                    list_a.insert(3,'-')
+                    list_a.insert(7,'-')
+                    STR="".join(list_a)
+                else:
+                    STR=b[i][j].strip()
+                self.table.setItem(i,j,QTableWidgetItem(STR))
+                self.table.item(i, j).setTextAlignment(132 | 128)
+        layout = QVBoxLayout()
+        layout.addWidget(self.table)
+        layout.addWidget(delbtn)
+        layout.addWidget(backbtn)
+        backgroundlmage = QImage('init.png')
+        palette = QPalette()
+        palette.setBrush(10, QBrush(backgroundlmage))
+        self.setWindowIcon(QIcon('아이콘.png'))
+        self.setWindowTitle('예약 조회')
+        self.setPalette(palette)
+        self.setLayout(layout)
+        self.resize(500, 500)
+        self.show()
+    def Back(self):
+        self.setVisible(False)
+        reserve(self.id)
+    def Delete(self):
+        try:
+            date=self.table.item(self.row,0).text()
+            time=self.table.item(self.row,1).text()
+            game=self.table.item(self.row,2).text()
+            sign=0
+            R_hour=int(time.split(":")[0])
+            R_min=int(time.split(":")[2])
+            Day = datetime.datetime.now()
+            now_date=str(Day.date())
+            Hour = Day.time().hour
+            Min = Day.time().minute
+            if date==now_date:
+                if R_hour >= Hour:
+                    a = (R_hour - Hour) * 60
+                    b = R_min - Min
+                    if b < 0:
+                        b += 60
+                        a -= 60
+                    if a + b <= 60 :
+                        sign=1
+                else:
+                    sign=1
+            else:
+                sign=0
+            if sign==1:
+                print("예약 취소가 불가")
+                #Messagebox(self,"예약 취소가 불가합니다.")
+            else:
+                print("예약 취소 가능")
+                #self.dialog=Check(self.id,date,time,game)
+        except:
+            print("빈 셀 선택")
+            #Messagebox(self,"빈 셀을 선택했습니다.")
+    def ROW(self):
+        self.row=self.table.currentRow()
+
+class reserve_d(QDialog):
+    def __init__(self, type,id):
+        super().__init__()
+        self.dialog=None
+        self.type = type
+        self.id=id
+        self.Date=None
+        self.initUI()
 
 #Main home interface
 class reserve(QDialog):
@@ -70,7 +176,7 @@ class reserve(QDialog):
         Min=Day.time().minute
         date=str(Day.date())
         sql = 'select RTIME from reserve where id=' + "'" + self.id + "' and TO_CHAR(RDATE,"+"'yyyy-mm-dd')="+"'"+date+"'"
-        b=Database(sql,1)
+        b=db.Database(sql,1)
         list_a=[]
         list_b=[]
         for i in range(len(b)):
@@ -92,10 +198,13 @@ class reserve(QDialog):
             STR=""
             for i in range(len(list_b)):
                 sql = 'select r.GAME,i.NAME,i.PHONE from reserve r, information i where r.RNUM=i.NUM and id=' + "'" + self.id + "' and TO_CHAR(RDATE,"+"'yyyy-mm-dd')="+"'"+date+"' and RTIME="+"'"+list_b[i]+"'"
-                b=Database(sql,1)
+                b=db.Database(sql,1)
                 STR+=b[0][1].split()[0]+"("+b[0][0].split()[0]+")"+" 예약이 1시간 전입니다!\n문의사항 : 0"+str(b[0][2])+'\n'
-            a=Messagebox(self,STR)
+            #a=Messagebox(self,STR)
             a.move(470,320)
+    def Inquiry2(self):
+        self.dialog=Inquiry(self.id)
+        self.setVisible(False)
    #image load
     def Image(self,type):
         self.select=type
@@ -108,3 +217,6 @@ class reserve(QDialog):
         elif type=='족구':
             self.btselect.setStyleSheet('background-image : url(족구.png);')
 
+    def detail(self):
+        self.setVisible(False)
+        self.dialog=reserve_d(self.select,self.id)
