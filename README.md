@@ -130,7 +130,7 @@ To get a local copy up and running follow these simple example steps.
 <img src="readmeimg/erd.png">
 
 ### 3. 테이블 스키마
-<img src="readmeimg/table.png">
+<img src="readmeimg/table.JPG">
 
 ### 4. 트랜잭션 설계
 ```database.py
